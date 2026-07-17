@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../store/authSlice';
-import { API_PRODUCTS, API_URL } from '../config';
+import { useSelector } from 'react-redux';
+import { API_PRODUCTS } from '../config';
 import { toast } from 'sonner';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import VendorHeader from '../components/VendorHeader';
+
 
 
 const VendorAddProduct = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
   const { user } = useSelector((state: any) => state.auth);
 
   const [name, setName] = useState('');
@@ -29,17 +29,6 @@ const VendorAddProduct = () => {
     }
   }, [user, navigate]);
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(`${API_URL}/logout`, {}, {
-        withCredentials: true,
-      });
-    } catch (error) {
-      console.error('Logout request failed:', error);
-    } finally {
-      dispatch(logoutUser());
-    }
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,47 +75,7 @@ const VendorAddProduct = () => {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
       {/* Navbar */}
-      <nav className="flex justify-between items-center px-10 py-4 bg-white shadow-sm border-b border-gray-100">
-        <h1 
-          className="text-2xl font-extrabold text-indigo-600 tracking-tight cursor-pointer" 
-          onClick={() => navigate("/")}
-        >
-          Mini-Ecommerce
-        </h1>
-
-        <div className="flex items-center space-x-6">
-          <button 
-            onClick={() => navigate("/")} 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
-          >
-            Home
-          </button>
-          <button 
-            onClick={() => navigate("/products")} 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
-          >
-            Shop
-          </button>
-          <button 
-            onClick={() => navigate("/vendor/add-product")} 
-            className="text-indigo-600 font-semibold transition-colors cursor-pointer"
-          >
-            Vendor Panel
-          </button>
-
-          <div className="flex items-center space-x-4 border-l border-gray-200 pl-6">
-            <span className="text-gray-700 font-medium">
-              Hi, <span className="text-indigo-600 font-semibold">{user.name}</span> (Vendor)
-            </span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 cursor-pointer"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <VendorHeader />
 
       {/* Main Content */}
       <div className="flex-1 flex justify-center items-center p-10">

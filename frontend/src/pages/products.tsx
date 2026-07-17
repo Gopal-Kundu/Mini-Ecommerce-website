@@ -106,17 +106,25 @@ function Products() {
             </button>
           )}
           {user && user.role === 'user' && (
-            <button 
-              onClick={() => navigate("/cart")} 
-              className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer relative"
-            >
-              Cart
-              {cart && cart.length > 0 && (
-                <span className="absolute -top-2 -right-3.5 bg-indigo-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                  {cart.reduce((sum: number, item: any) => sum + item.quantity, 0)}
-                </span>
-              )}
-            </button>
+            <>
+              <button 
+                onClick={() => navigate("/cart")} 
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer relative"
+              >
+                Cart
+                {cart && cart.length > 0 && (
+                  <span className="absolute -top-2 -right-3.5 bg-indigo-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {cart.reduce((sum: number, item: any) => sum + item.quantity, 0)}
+                  </span>
+                )}
+              </button>
+              <button 
+                onClick={() => navigate("/orders/track")} 
+                className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
+              >
+                Track Orders
+              </button>
+            </>
           )}
 
           {user ? (

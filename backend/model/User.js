@@ -30,6 +30,11 @@ const userSchema = new mongoose.Schema({
         required: true,
         default: 1,
       },
+      vendor: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+      },
     },
   ],
   role: {

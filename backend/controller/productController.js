@@ -40,6 +40,7 @@ export const createProduct = async (req, res) => {
       description,
       category,
       image,
+      vendor: req.id,
     });
 
     res.status(201).json({
@@ -50,6 +51,28 @@ export const createProduct = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to create product',
+    });
+  }
+};
+
+export const getVendorProducts = async (req, res) => {
+  try {
+    if (req.role !== 'vendor') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Only vendors can access this resource.',
+      });
+    }
+
+    const products = await Product.find({ vendor: req.id });
+    res.status(200).json({
+      success: true,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch vendor products',
     });
   }
 };

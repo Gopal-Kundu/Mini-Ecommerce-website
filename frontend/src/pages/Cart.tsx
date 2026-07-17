@@ -2,17 +2,17 @@ import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { setCart, logoutUser } from '../store/authSlice';
-import { API_CART, API_URL } from '../config';
+import { API_CART, API_URL, API_ORDERS } from '../config';
 import { toast } from 'sonner';
 import axios from 'axios';
 import Footer from '../components/Footer';
-
 
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user, cart } = useSelector((state: any) => state.auth);
   const [updating, setUpdating] = useState(false);
+  const [address, setAddress] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -73,15 +73,20 @@ const Cart = () => {
   };
 
   const handleCheckout = async () => {
+    if (!address.trim()) {
+      toast.error('Please enter a shipping address');
+      return;
+    }
     setUpdating(true);
     try {
-      const response = await axios.delete(API_CART, {
+      const response = await axios.post(`${API_ORDERS}/checkout`, { address }, {
         withCredentials: true,
       });
       const data = response.data;
       if (data.success) {
         dispatch(setCart([]));
-        toast.success('Order placed successfully!');
+        toast.success('Order placed!');
+        setAddress('');
       } else {
         toast.error(data.message || 'Checkout failed');
       }
@@ -245,9 +250,23 @@ const Cart = () => {
                 </div>
               </div>
 
-              <div className="border-t border-gray-100 pt-4 flex justify-between text-slate-900 font-bold">
+              <div className="border-t border-gray-100 pt-4 flex justify-between text-slate-900 font-bold pb-2">
                 <span>Total Amount</span>
                 <span className="text-xl text-indigo-600">₹{subtotal}</span>
+              </div>
+
+              {/* Delivery Address Input */}
+              <div className="space-y-2 border-t border-gray-100 pt-4">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Delivery Address
+                </label>
+                <textarea
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter complete shipping address (e.g. 123 Main St, City, Country)..."
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all h-24 resize-none"
+                  required
+                />
               </div>
 
               <button

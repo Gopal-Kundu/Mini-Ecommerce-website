@@ -8,6 +8,9 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
 import VendorAddProduct from "./pages/VendorAddProduct";
+import VendorProducts from "./pages/VendorProducts";
+import VendorOrders from "./pages/VendorOrders";
+import TrackOrders from "./pages/TrackOrders";
 import { store } from "./store";
 
 import { setUser, setLoading } from "./store/authSlice";
@@ -61,6 +64,9 @@ function AppContent() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/vendor/add-product" element={<VendorAddProduct />} />
+        <Route path="/vendor/products" element={<VendorProducts />} />
+        <Route path="/vendor/orders" element={<VendorOrders />} />
+        <Route path="/orders/track" element={<TrackOrders />} />
       </Routes>
     </BrowserRouter>
   );

@@ -6,6 +6,7 @@ import connectDB from './db/db.js';
 import authRouter from './router/authRouter.js';
 import productRouter from './router/productRouter.js';
 import cartRouter from './router/cartRouter.js';
+import orderRouter from './router/orderRouter.js';
 dotenv.config();
 
 const app = express();
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRouter);
 app.use('/api/products', productRouter);
 app.use('/api/cart', cartRouter);
+app.use('/api/orders', orderRouter);
 
 
 
