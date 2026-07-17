@@ -48,7 +48,12 @@ const Signup = () => {
         setError(data.message || 'Registration failed');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      const msg = err.response?.data?.message || 'Registration failed';
+      if (msg.toLowerCase().includes('already exists')) {
+        setError('Email already exists, please login');
+      } else {
+        setError(msg);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -68,7 +73,14 @@ const Signup = () => {
         {error && (
           <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-start gap-2">
             <span className="mt-0.5">⚠️</span>
-            <span>{error}</span>
+            <div className="flex-1">
+              <span>{error}</span>
+              {error.includes('already exists') && (
+                <Link to="/login" className="ml-2 font-bold text-indigo-400 hover:underline">
+                  Login here
+                </Link>
+              )}
+            </div>
           </div>
         )}
 

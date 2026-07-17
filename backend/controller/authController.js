@@ -11,8 +11,10 @@ export const signup = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide all fields' });
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Email validation
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(normalizedEmail)) {
       return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
     }
 
@@ -25,7 +27,7 @@ export const signup = async (req, res, next) => {
       });
     }
 
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({ success: false, message: 'User already exists with this email' });
     }
@@ -34,7 +36,7 @@ export const signup = async (req, res, next) => {
 
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password: hashedPassword,
       role: role || 'user',
     });
@@ -64,12 +66,14 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
     }
 
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Email validation
-    if (!validator.isEmail(email)) {
+    if (!validator.isEmail(normalizedEmail)) {
       return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
     }
 
-    const user = await User.findOne({ email }).select('+password').populate('cart.product');
+    const user = await User.findOne({ email: normalizedEmail }).select('+password').populate('cart.product');
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
