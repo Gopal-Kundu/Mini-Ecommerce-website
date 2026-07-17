@@ -5,7 +5,7 @@ This is a comprehensive, full-stack **MERN (MongoDB, Express, React, Node.js)** 
 ---
 
 ## 🚀 Live Demo & API URLs
-- **Frontend App:** [https://mini-ecommerce-website-lrgz.vercel.app](https://mini-ecommerce-website-lrgz.vercel.app)
+- **Frontend App:** [https://mini-ecommerce-website-ruby.vercel.app](https://mini-ecommerce-website-ruby.vercel.app)
 - **Backend API URL:** `https://mini-ecommerce-website-lrgz.vercel.app/api`
 
 ---
