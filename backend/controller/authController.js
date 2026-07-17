@@ -58,9 +58,49 @@ export const signup = async (req, res, next) => {
   }
 };
 
+
+const sendOtpEmail = async (userName, userEmail, otp) => {
+  const serviceId = process.env.EMAILJS_SERVICE_ID || 'service_j185gcr';
+  const templateId = process.env.EMAILJS_TEMPLATE_ID || 'template_bh6y4ah';
+  const publicKey = process.env.EMAILJS_PUBLIC_KEY || '55GjyR5HxwazD17Dl';
+
+  const payload = {
+    service_id: serviceId,
+    template_id: templateId,
+    user_id: publicKey,
+    template_params: {
+      user_name: userName,
+      to_email: userEmail,
+      email: userEmail,
+      user_email: userEmail,
+      to: userEmail,
+      otp: otp,
+    },
+  };
+
+  if (process.env.EMAILJS_ACCESS_TOKEN) {
+    payload.accessToken = process.env.EMAILJS_ACCESS_TOKEN;
+  }
+
+  const response = await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`EmailJS send failed: ${response.status} - ${errorText}`);
+  }
+
+  return response;
+};
+
 export const login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, otp } = req.body;
 
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Please provide email and password' });
@@ -73,7 +113,7 @@ export const login = async (req, res, next) => {
       return res.status(400).json({ success: false, message: 'Please provide a valid email address' });
     }
 
-    const user = await User.findOne({ email: normalizedEmail }).select('+password').populate('cart.product');
+    const user = await User.findOne({ email: normalizedEmail }).select('+password +otp +otpExpires').populate('cart.product');
     if (!user) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
@@ -82,6 +122,51 @@ export const login = async (req, res, next) => {
     if (!isMatch) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
+
+    // If OTP is not provided, generate, save and send it
+    if (!otp) {
+      const otpCode = Math.floor(1000 + Math.random() * 9000).toString();
+
+      await User.updateOne(
+        { _id: user._id },
+        {
+          otp: otpCode,
+          otpExpires: new Date(Date.now() + 5 * 60 * 1000), // 5 minutes validity
+        }
+      );
+
+      try {
+        await sendOtpEmail(user.name, user.email, otpCode);
+      } catch (emailError) {
+        console.error('Failed to send OTP email:', emailError);
+        return res.status(500).json({
+          success: false,
+          message: 'Failed to send OTP verification email. Please try again.',
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        requiresOtp: true,
+        message: 'OTP has been sent to your email address.',
+      });
+    }
+
+    // If OTP is provided, verify it
+    if (!user.otp || user.otp !== otp || !user.otpExpires || new Date() > user.otpExpires) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired OTP. Please try again.',
+      });
+    }
+
+    // Clear OTP fields upon successful verification
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: { otp: null, otpExpires: null }
+      }
+    );
 
     const token = jwt.sign(
       { userId: user._id.toString(), role: user.role },

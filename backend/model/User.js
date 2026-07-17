@@ -47,6 +47,14 @@ const userSchema = new mongoose.Schema({
     enum: ['user', 'vendor'],
     default: 'user',
   },
+  otp: {
+    type: String,
+    default: null,
+  },
+  otpExpires: {
+    type: Date,
+    default: null,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

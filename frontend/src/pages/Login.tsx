@@ -8,7 +8,10 @@ import axios from 'axios';
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [otp, setOtp] = useState('');
+  const [requiresOtp, setRequiresOtp] = useState(false);
   const [error, setError] = useState('');
+  const [infoMessage, setInfoMessage] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,6 +19,7 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setInfoMessage('');
 
     // Frontend Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -27,6 +31,45 @@ const Login = () => {
     setSubmitting(true);
 
     try {
+      const payload: any = {
+        email,
+        password,
+      };
+      if (requiresOtp) {
+        payload.otp = otp;
+      }
+
+      const response = await axios.post(`${API_URL}/login`, payload, {
+        withCredentials: true,
+      });
+      const data = response.data;
+      if (data.success) {
+        if (data.requiresOtp) {
+          setRequiresOtp(true);
+          setInfoMessage(data.message || 'OTP has been sent to your email.');
+        } else {
+          dispatch(setUser(data.user));
+          if (data.user.role === 'vendor') {
+            navigate('/vendor/add-product');
+          } else {
+            navigate('/products');
+          }
+        }
+      } else {
+        setError(data.message || 'Invalid credentials');
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Invalid credentials');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    setError('');
+    setInfoMessage('');
+    setSubmitting(true);
+    try {
       const response = await axios.post(`${API_URL}/login`, {
         email,
         password,
@@ -34,18 +77,13 @@ const Login = () => {
         withCredentials: true,
       });
       const data = response.data;
-      if (data.success) {
-        dispatch(setUser(data.user));
-        if (data.user.role === 'vendor') {
-          navigate('/vendor/add-product');
-        } else {
-          navigate('/products');
-        }
+      if (data.success && data.requiresOtp) {
+        setInfoMessage('A new OTP has been sent to your email.');
       } else {
-        setError(data.message || 'Invalid credentials');
+        setError(data.message || 'Failed to resend OTP.');
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Invalid credentials');
+      setError(err.response?.data?.message || 'Failed to resend OTP.');
     } finally {
       setSubmitting(false);
     }
@@ -68,43 +106,85 @@ const Login = () => {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
-              Email Address
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="name@example.com"
-              required
-            />
+        {infoMessage && (
+          <div className="bg-indigo-500/10 border border-indigo-500/50 text-indigo-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-start gap-2">
+            <span>{infoMessage}</span>
           </div>
+        )}
 
-          <div>
-            <div className="flex justify-between items-center mb-2">
-              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Password
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {!requiresOtp ? (
+            <>
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="name@example.com"
+                  required
+                />
+              </div>
+
+              <div>
+                <div className="flex justify-between items-center mb-2">
+                  <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                    Password
+                  </label>
+                </div>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                  placeholder="••••••••"
+                  required
+                />
+              </div>
+            </>
+          ) : (
+            <div>
+              <label className="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                Enter One-Time Password (OTP)
               </label>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                maxLength={4}
+                className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-center text-2xl font-bold tracking-widest"
+                placeholder="0000"
+                required
+              />
+              <div className="flex justify-between items-center mt-4">
+                <button
+                  type="button"
+                  onClick={() => { setRequiresOtp(false); setOtp(''); setInfoMessage(''); }}
+                  className="text-xs text-slate-400 hover:text-white transition-colors"
+                >
+                  ← Back to credentials
+                </button>
+                <button
+                  type="button"
+                  onClick={handleResendOtp}
+                  disabled={submitting}
+                  className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold transition-colors disabled:opacity-50"
+                >
+                  Resend OTP
+                </button>
+              </div>
             </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-white/[0.05] border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
-              placeholder="••••••••"
-              required
-            />
-          </div>
+          )}
 
           <button
             type="submit"
             disabled={submitting}
             className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all duration-200 flex justify-center items-center gap-2 disabled:opacity-50 cursor-pointer"
           >
-            {submitting ? 'Signing in...' : 'Sign In'}
+            {submitting ? 'Processing...' : requiresOtp ? 'Verify & Sign In' : 'Sign In'}
           </button>
         </form>
 
