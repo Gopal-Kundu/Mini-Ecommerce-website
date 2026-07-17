@@ -16,6 +16,14 @@ const Login = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Frontend Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -54,8 +62,8 @@ const Login = () => {
         <p className="text-center text-slate-400 text-sm mb-8">Sign in to your account</p>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-center gap-2">
-            <span>⚠️</span>
+          <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-start gap-2">
+            <span className="mt-0.5">⚠️</span>
             <span>{error}</span>
           </div>
         )}

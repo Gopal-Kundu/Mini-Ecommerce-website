@@ -15,6 +15,21 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    // Frontend Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError('Please enter a valid email address');
+      return;
+    }
+
+    // Frontend Password validation (Strong Password Rule)
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must contain at least 8 characters, including uppercase, lowercase, number and a special character.');
+      return;
+    }
+
     setSubmitting(true);
 
     try {
@@ -51,8 +66,8 @@ const Signup = () => {
         <p className="text-center text-slate-400 text-sm mb-8">Create your new account</p>
 
         {error && (
-          <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-center gap-2">
-            <span>⚠️</span>
+          <div className="bg-red-500/10 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm mb-6 flex items-start gap-2">
+            <span className="mt-0.5">⚠️</span>
             <span>{error}</span>
           </div>
         )}
@@ -112,12 +127,15 @@ const Signup = () => {
               placeholder="••••••••"
               required
             />
+            <p className="text-[10px] text-slate-400 mt-2 leading-relaxed">
+              * Must be at least 8 characters long, containing 1 uppercase, 1 lowercase, 1 digit, and 1 special symbol.
+            </p>
           </div>
 
           <button
             type="submit"
             disabled={submitting}
-            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all duration-200 flex justify-center items-center gap-2 disabled:opacity-50"
+            className="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all duration-200 flex justify-center items-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             {submitting ? 'Creating account...' : 'Sign Up'}
           </button>
