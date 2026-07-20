@@ -108,15 +108,6 @@ const Login = () => {
       </div>
 
       <div className="w-full max-w-md bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative z-10">
-        <div className="flex justify-between items-center mb-4 sm:hidden">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Home</span>
-          </button>
-        </div>
         <h2 className="text-3xl font-extrabold text-center text-white mb-2 tracking-tight">Welcome Back</h2>
         <p className="text-center text-slate-400 text-sm mb-8">Sign in to your account</p>
 
