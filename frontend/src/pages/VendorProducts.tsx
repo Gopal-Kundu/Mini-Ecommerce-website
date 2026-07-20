@@ -53,7 +53,7 @@ const VendorProducts = () => {
       <VendorHeader />
 
       {/* Main Content */}
-      <div className="flex-1 p-10 max-w-7xl mx-auto w-full">
+      <div className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">My Products</h1>

@@ -78,7 +78,7 @@ const VendorAddProduct = () => {
       <VendorHeader />
 
       {/* Main Content */}
-      <div className="flex-1 flex justify-center items-center p-10">
+      <div className="flex-1 flex justify-center items-center p-4 sm:p-6 md:p-10">
         <div className="w-full max-w-xl bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
           <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Add New Product</h2>
           <p className="text-slate-500 text-sm mb-8">List a new product in the marketplace store.</p>

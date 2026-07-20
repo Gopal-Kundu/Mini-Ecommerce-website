@@ -81,7 +81,7 @@ const VendorOrders = () => {
       <VendorHeader />
 
       {/* Main Content */}
-      <div className="flex-1 p-10 max-w-7xl mx-auto w-full">
+      <div className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
         <div className="mb-8">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Orders Received</h1>
           <p className="text-slate-500 mt-1">Monitor, ship, and manage order fulfillments for your listed products</p>

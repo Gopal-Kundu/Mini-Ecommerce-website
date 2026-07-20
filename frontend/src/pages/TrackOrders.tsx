@@ -1,16 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { logoutUser } from '../store/authSlice';
-import { API_ORDERS, API_URL } from '../config';
+import { useSelector } from 'react-redux';
+import { API_ORDERS } from '../config';
 import { toast } from 'sonner';
 import axios from 'axios';
 import Footer from '../components/Footer';
+import Navbar from '../components/Navbar';
 
 const TrackOrders = () => {
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { user, cart } = useSelector((state: any) => state.auth);
+  const { user } = useSelector((state: any) => state.auth);
   
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,18 +40,6 @@ const TrackOrders = () => {
     fetchMyOrders();
   }, [user, navigate]);
 
-  const handleLogout = async () => {
-    try {
-      await axios.post(`${API_URL}/logout`, {}, {
-        withCredentials: true,
-      });
-    } catch (error) {
-      console.error('Logout request failed:', error);
-    } finally {
-      dispatch(logoutUser());
-    }
-  };
-
   const getStatusStep = (status: string) => {
     switch (status) {
       case 'Pending': return 1;
@@ -66,62 +53,10 @@ const TrackOrders = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center px-10 py-4 bg-white shadow-sm border-b border-gray-100">
-        <h1 
-          className="text-2xl font-extrabold text-indigo-600 tracking-tight cursor-pointer" 
-          onClick={() => navigate("/")}
-        >
-          Mini-Ecommerce
-        </h1>
-
-        <div className="flex items-center space-x-6">
-          <button 
-            onClick={() => navigate("/")} 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
-          >
-            Home
-          </button>
-          <button 
-            onClick={() => navigate("/products")} 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
-          >
-            Shop
-          </button>
-          <button 
-            onClick={() => navigate("/cart")} 
-            className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer relative"
-          >
-            Cart
-            {cart && cart.length > 0 && (
-              <span className="absolute -top-2 -right-3.5 bg-indigo-600 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                {cart.reduce((sum: number, item: any) => sum + item.quantity, 0)}
-              </span>
-            )}
-          </button>
-          <button 
-            onClick={() => navigate("/orders/track")} 
-            className="text-indigo-600 font-semibold transition-colors cursor-pointer"
-          >
-            Track Orders
-          </button>
-
-          <div className="flex items-center space-x-4 border-l border-gray-200 pl-6">
-            <span className="text-gray-700 font-medium">
-              Hi, <span className="text-indigo-600 font-semibold">{user.name}</span>
-            </span>
-            <button
-              onClick={handleLogout}
-              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 cursor-pointer"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <Navbar />
 
       {/* Main Content */}
-      <div className="flex-1 p-10 max-w-7xl mx-auto w-full">
+      <div className="flex-1 p-4 sm:p-6 md:p-10 max-w-7xl mx-auto w-full">
         <div className="mb-8">
           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Track Your Orders</h1>
           <p className="text-slate-500 mt-1">Check shipment status and expected delivery dates for your items</p>
