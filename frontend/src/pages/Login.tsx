@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux';
 import { setUser } from '../store/authSlice';
 import { API_URL } from '../config';
 import axios from 'axios';
+import { ArrowLeft } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -90,12 +91,32 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
       {/* Background glow animations */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
 
+      {/* Top Back to Home Button */}
+      <div className="absolute top-6 left-6 z-20">
+        <button
+          onClick={() => navigate('/')}
+          className="flex items-center gap-2 text-slate-300 hover:text-white bg-white/5 hover:bg-white/10 border border-white/10 px-4 py-2 rounded-xl text-sm font-medium backdrop-blur-md transition-all cursor-pointer shadow-lg"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Home</span>
+        </button>
+      </div>
+
       <div className="w-full max-w-md bg-white/[0.03] backdrop-blur-xl border border-white/10 p-8 rounded-2xl shadow-2xl relative z-10">
+        <div className="flex justify-between items-center mb-4 sm:hidden">
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1.5 text-slate-400 hover:text-white text-xs font-medium transition-colors cursor-pointer"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Home</span>
+          </button>
+        </div>
         <h2 className="text-3xl font-extrabold text-center text-white mb-2 tracking-tight">Welcome Back</h2>
         <p className="text-center text-slate-400 text-sm mb-8">Sign in to your account</p>
 
