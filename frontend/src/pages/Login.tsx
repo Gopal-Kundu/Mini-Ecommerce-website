@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { setUser } from '../store/authSlice';
 import { API_URL } from '../config';
 import axios from 'axios';
@@ -16,6 +16,17 @@ const Login = () => {
   const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useSelector((state: any) => state.auth);
+
+  useEffect(() => {
+    if (user) {
+      if (user.role === 'vendor') {
+        navigate('/vendor/add-product');
+      } else {
+        navigate('/products');
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

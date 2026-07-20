@@ -26,7 +26,6 @@ function AppContent() {
 
   useEffect(() => {
     const loadUser = async () => {
-      dispatch(setLoading(true));
       try {
         const response = await axios.get(`${API_URL}/me`, {
           withCredentials: true,

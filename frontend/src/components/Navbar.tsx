@@ -50,7 +50,7 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
             <span className="text-2xl font-extrabold text-indigo-600 tracking-tight">
               Mini-Ecommerce
             </span>
-            {isVendorRoute && (
+            {(isVendorRoute || user?.role === 'vendor') && (
               <span className="bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-md border border-indigo-100 hidden sm:inline-block">
                 Vendor Panel
               </span>
@@ -65,7 +65,7 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
             >
               Home
             </button>
-            {!isVendorRoute && user?.role !== 'vendor' && (
+            {user?.role !== 'vendor' && (
               <button
                 onClick={() => navigate("/products")}
                 className={`font-medium transition-colors cursor-pointer ${isActive("/products") ? "text-indigo-600 font-semibold" : "text-gray-600 hover:text-indigo-600"}`}
@@ -74,8 +74,8 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
               </button>
             )}
 
-            {/* Vendor Links if in Vendor route or vendor role */}
-            {isVendorRoute && user?.role === 'vendor' ? (
+            {/* Vendor Links if logged in as Vendor */}
+            {user?.role === 'vendor' ? (
               <>
                 <div className="h-4 w-px bg-gray-200"></div>
                 <button
@@ -99,14 +99,6 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
               </>
             ) : (
               <>
-                {user && user.role === 'vendor' && (
-                  <button
-                    onClick={() => navigate("/vendor/add-product")}
-                    className="text-gray-600 hover:text-indigo-600 font-medium transition-colors cursor-pointer"
-                  >
-                    Vendor Panel
-                  </button>
-                )}
                 {user && user.role === 'user' && (
                   <>
                     <button
@@ -189,7 +181,7 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
       >
         <div className="overflow-hidden bg-white">
           <div className="px-4 pt-3 pb-6 space-y-3">
-            {isVendorRoute && (
+            {(isVendorRoute || user?.role === 'vendor') && (
               <div className="px-3 py-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-md w-fit mb-2">
                 Vendor Panel
               </div>
@@ -206,7 +198,7 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
                 <span>Home</span>
               </button>
 
-              {!isVendorRoute && user?.role !== 'vendor' && (
+              {user?.role !== 'vendor' && (
                 <button
                   onClick={() => { navigate("/products"); closeMenu(); }}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-base text-left transition-colors ${
@@ -218,7 +210,7 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
                 </button>
               )}
 
-              {isVendorRoute && user?.role === 'vendor' ? (
+              {user?.role === 'vendor' ? (
                 <>
                   <div className="pt-2 border-t border-gray-100 text-xs font-bold text-slate-400 uppercase tracking-wider px-3">
                     Vendor Controls
@@ -255,16 +247,6 @@ const Navbar: React.FC<NavbarProps> = ({ isVendorMode = false }) => {
                 </>
               ) : (
                 <>
-                  {user && user.role === 'vendor' && (
-                    <button
-                      onClick={() => { navigate("/vendor/add-product"); closeMenu(); }}
-                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium text-base text-left text-gray-700 hover:bg-gray-50 transition-colors"
-                    >
-                      <Package className="w-5 h-5 text-indigo-600" />
-                      <span>Vendor Panel</span>
-                    </button>
-                  )}
-
                   {user && user.role === 'user' && (
                     <>
                       <button
